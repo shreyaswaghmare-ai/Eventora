@@ -13,13 +13,16 @@ function Home() {
   return (
     <div className="min-h-screen overflow-hidden">
 
+      {/* HERO SECTION */}
       <section className="relative flex min-h-screen items-center px-6 pt-24">
 
+        {/* Background Glow */}
         <div className="absolute left-10 top-32 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="absolute bottom-10 right-10 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
 
+          {/* Left Content */}
           <div>
 
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-sm text-cyan-300">
@@ -48,6 +51,7 @@ function Home() {
               and create unforgettable experiences with Eventora.
             </p>
 
+            {/* Search */}
             <div className="mt-8 flex max-w-xl items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur-xl">
 
               <Search className="ml-3 text-slate-500" size={22} />
@@ -67,6 +71,7 @@ function Home() {
 
             </div>
 
+            {/* Buttons */}
             <div className="mt-8 flex flex-wrap gap-4">
 
               <Link
@@ -91,6 +96,7 @@ function Home() {
 
           </div>
 
+          {/* Right Visual */}
           <div className="relative hidden lg:block">
 
             <div className="absolute inset-0 rounded-full bg-cyan-400/10 blur-3xl" />
@@ -146,6 +152,7 @@ function Home() {
         </div>
       </section>
 
+      {/* STATS */}
       <section className="border-y border-white/5 bg-white/[0.02] px-6 py-16">
 
         <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
