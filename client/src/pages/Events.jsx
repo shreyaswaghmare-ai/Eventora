@@ -1,5 +1,5 @@
 import { Search, MapPin, Calendar } from "lucide-react";
-
+import { Link } from "react-router-dom";
 function Events() {
   const events = [
     {
@@ -130,9 +130,9 @@ function Events() {
                     {event.price}
                   </span>
 
-                  <button className="rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950">
+                  <Link to={`/event/${event.id}`} className="rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950">
                     View Event
-                  </button>
+                  </Link>
 
                 </div>
 

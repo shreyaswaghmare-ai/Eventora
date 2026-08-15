@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const eventRoutes = require("./routes/eventRoutes"); // 1. Import event routes
 
 connectDB();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/events", eventRoutes); // 2. Mount event routes under /api/events
 
 app.get("/", (req, res) => {
   res.json({

@@ -30,13 +30,17 @@ function Register() {
       setLoading(true);
       setMessage("");
 
-      await register(formData);
+      const response = await register(formData);
 
-      navigate("/events");
+      // Redirect based on role returned from backend or state
+      if (response?.user?.role === "organizer" || formData.role === "organizer") {
+        navigate("/organizer/dashboard");
+      } else {
+        navigate("/events");
+      }
     } catch (error) {
       setMessage(
-        error.response?.data?.message ||
-          "Registration failed"
+        error.response?.data?.message || "Registration failed"
       );
     } finally {
       setLoading(false);
@@ -45,13 +49,8 @@ function Register() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 pt-20">
-
       <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-xl">
-
-        <h1 className="text-3xl font-bold">
-          Create your account 🚀
-        </h1>
-
+        <h1 className="text-3xl font-bold">Create your account 🚀</h1>
         <p className="mt-2 text-slate-400">
           Join Eventora and discover amazing events.
         </p>
@@ -62,15 +61,9 @@ function Register() {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-8 space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <div>
-            <label className="mb-2 block text-sm text-slate-400">
-              Full Name
-            </label>
-
+            <label className="mb-2 block text-sm text-slate-400">Full Name</label>
             <input
               type="text"
               name="name"
@@ -83,10 +76,7 @@ function Register() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-400">
-              Email
-            </label>
-
+            <label className="mb-2 block text-sm text-slate-400">Email</label>
             <input
               type="email"
               name="email"
@@ -99,10 +89,7 @@ function Register() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-400">
-              Password
-            </label>
-
+            <label className="mb-2 block text-sm text-slate-400">Password</label>
             <input
               type="password"
               name="password"
@@ -116,10 +103,7 @@ function Register() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-400">
-              Account Type
-            </label>
-
+            <label className="mb-2 block text-sm text-slate-400">Account Type</label>
             <select
               name="role"
               value={formData.role}
@@ -136,24 +120,17 @@ function Register() {
             disabled={loading}
             className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02] disabled:opacity-50"
           >
-            {loading
-              ? "Creating Account..."
-              : "Create Account"}
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-cyan-400 hover:underline"
-          >
+          <Link to="/login" className="text-cyan-400 hover:underline">
             Login
           </Link>
         </p>
-
       </div>
-
     </div>
   );
 }
