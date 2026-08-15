@@ -1,51 +1,47 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError("");
-
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/users/login",
-        formData
-      );
+      setLoading(true);
+      setMessage("");
 
-      console.log(response.data);
+      const response = await login(formData);
 
-      const user = response.data.user;
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      if (user.role === "organizer") {
-        navigate("/organizer");
+      if (response.user.role === "organizer") {
+        navigate("/organizer/dashboard");
       } else {
-        navigate("/");
+        navigate("/events");
       }
-
     } catch (error) {
-      setError(
-        error.response?.data?.message || "Login failed"
+      setMessage(
+        error.response?.data?.message ||
+          "Login failed"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,11 +58,16 @@ function Login() {
           Login to your Eventora account.
         </p>
 
+        {message && (
+          <div className="mt-5 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+            {message}
+          </div>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="mt-8 space-y-5"
         >
-
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Email
@@ -99,24 +100,17 @@ function Login() {
             />
           </div>
 
-          {error && (
-            <p className="text-center text-sm text-red-400">
-              {error}
-            </p>
-          )}
-
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02]"
+            disabled={loading}
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02] disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Don't have an account?{" "}
-
           <Link
             to="/register"
             className="text-cyan-400 hover:underline"

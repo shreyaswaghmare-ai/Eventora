@@ -1,49 +1,45 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 function Register() {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "attendee"
+    role: "user",
   });
 
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage("");
-    setError("");
-
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/users/register",
-        formData
-      );
+      setLoading(true);
+      setMessage("");
 
-      setMessage(response.data.message);
+      await register(formData);
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
-
+      navigate("/events");
     } catch (error) {
-      setError(
-        error.response?.data?.message || "Registration failed"
+      setMessage(
+        error.response?.data?.message ||
+          "Registration failed"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,12 +56,16 @@ function Register() {
           Join Eventora and discover amazing events.
         </p>
 
+        {message && (
+          <div className="mt-5 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+            {message}
+          </div>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="mt-8 space-y-5"
         >
-
-          {/* Name */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Full Name
@@ -82,7 +82,6 @@ function Register() {
             />
           </div>
 
-          {/* Email */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Email
@@ -99,7 +98,6 @@ function Register() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Password
@@ -110,13 +108,13 @@ function Register() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Create a password"
+              placeholder="••••••••"
+              minLength="6"
               required
               className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400"
             />
           </div>
 
-          {/* Role */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Account Type
@@ -128,37 +126,24 @@ function Register() {
               onChange={handleChange}
               className="w-full rounded-xl border border-white/10 bg-slate-950 px-4 py-3 text-slate-300 outline-none"
             >
-              <option value="attendee">Attendee</option>
+              <option value="user">Attendee</option>
               <option value="organizer">Organizer</option>
             </select>
           </div>
 
-          {/* Message */}
-          {message && (
-            <p className="text-center text-sm text-green-400">
-              {message}
-            </p>
-          )}
-
-          {error && (
-            <p className="text-center text-sm text-red-400">
-              {error}
-            </p>
-          )}
-
-          {/* Button */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02]"
+            disabled={loading}
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02] disabled:opacity-50"
           >
-            Create Account
+            {loading
+              ? "Creating Account..."
+              : "Create Account"}
           </button>
-
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{" "}
-
           <Link
             to="/login"
             className="text-cyan-400 hover:underline"
