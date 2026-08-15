@@ -1,6 +1,52 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Register() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "attendee"
+  });
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setMessage("");
+    setError("");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/users/register",
+        formData
+      );
+
+      setMessage(response.data.message);
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Registration failed"
+      );
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center px-6 pt-20">
 
@@ -14,8 +60,12 @@ function Register() {
           Join Eventora and discover amazing events.
         </p>
 
-        <form className="mt-8 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-8 space-y-5"
+        >
 
+          {/* Name */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Full Name
@@ -23,11 +73,16 @@ function Register() {
 
             <input
               type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Your name"
+              required
               className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400"
             />
           </div>
 
+          {/* Email */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Email
@@ -35,11 +90,16 @@ function Register() {
 
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="you@example.com"
+              required
               className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400"
             />
           </div>
 
+          {/* Password */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Password
@@ -47,23 +107,50 @@ function Register() {
 
             <input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Create a password"
+              required
               className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400"
             />
           </div>
 
+          {/* Role */}
           <div>
             <label className="mb-2 block text-sm text-slate-400">
               Account Type
             </label>
 
-            <select className="w-full rounded-xl border border-white/10 bg-slate-950 px-4 py-3 text-slate-300 outline-none">
-              <option>Attendee</option>
-              <option>Organizer</option>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-white/10 bg-slate-950 px-4 py-3 text-slate-300 outline-none"
+            >
+              <option value="attendee">Attendee</option>
+              <option value="organizer">Organizer</option>
             </select>
           </div>
 
-          <button className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02]">
+          {/* Message */}
+          {message && (
+            <p className="text-center text-sm text-green-400">
+              {message}
+            </p>
+          )}
+
+          {error && (
+            <p className="text-center text-sm text-red-400">
+              {error}
+            </p>
+          )}
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02]"
+          >
             Create Account
           </button>
 
@@ -71,6 +158,7 @@ function Register() {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{" "}
+
           <Link
             to="/login"
             className="text-cyan-400 hover:underline"

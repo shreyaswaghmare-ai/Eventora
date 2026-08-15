@@ -1,33 +1,45 @@
 const mongoose = require("mongoose");
-const { type } = require("node:os");
-const { title } = require("node:process");
 
-const eventSchema = new mongoose.Schema({
-
+const eventSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
+
+    category: {
+      type: String,
+      required: true,
+    },
+
     description: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
+
     date: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
+
     location: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-    Organizer: {
-        type: String,
-        required: true
-    }
-    
-    
-});
 
-const Event = mongoose.model("Event", eventSchema);
+    ticketsAvailable: {
+      type: Number,
+      required: true,
+    },
 
-module.exports = Event ;
+    price: {
+      type: Number,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Event", eventSchema);

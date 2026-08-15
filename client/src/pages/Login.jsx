@@ -1,6 +1,54 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError("");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/users/login",
+        formData
+      );
+
+      console.log(response.data);
+
+      const user = response.data.user;
+
+      localStorage.setItem("user", JSON.stringify(user));
+
+      if (user.role === "organizer") {
+        navigate("/organizer");
+      } else {
+        navigate("/");
+      }
+
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Login failed"
+      );
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center px-6 pt-20">
 
@@ -14,7 +62,10 @@ function Login() {
           Login to your Eventora account.
         </p>
 
-        <form className="mt-8 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-8 space-y-5"
+        >
 
           <div>
             <label className="mb-2 block text-sm text-slate-400">
@@ -23,7 +74,11 @@ function Login() {
 
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="you@example.com"
+              required
               className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400"
             />
           </div>
@@ -35,12 +90,25 @@ function Login() {
 
             <input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="••••••••"
+              required
               className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400"
             />
           </div>
 
-          <button className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02]">
+          {error && (
+            <p className="text-center text-sm text-red-400">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-3.5 font-bold text-slate-950 transition hover:scale-[1.02]"
+          >
             Login
           </button>
 
@@ -48,6 +116,7 @@ function Login() {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Don't have an account?{" "}
+
           <Link
             to="/register"
             className="text-cyan-400 hover:underline"

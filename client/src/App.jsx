@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 
 import Home from "./pages/Home";
 import Events from "./pages/Events";
-import EventDetails from "./pages/EventDetails";
+import EventDetails from "./pages/EventsDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
